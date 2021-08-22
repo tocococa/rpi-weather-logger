@@ -12,12 +12,17 @@ BAUD = 9600
 PATH = './weather_data.csv'
 
 
-def ToCSV(readings):
-    with open(PATH, buffering=1, mode='a'):
+def ToCSV(line):
+    with open(PATH, buffering=1, mode='a') as file:
+        file.write(line)
 
 
 def main(serial_obj):
-    pass
+    while True:
+        if ser.in_waiting > 0:
+            line = ser.readline().decode('utf-8').rstrip()
+            print(line)
+            ToCSV(line)
 
 
 if __name__ == '__main__':
