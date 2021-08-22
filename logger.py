@@ -19,8 +19,8 @@ def ToCSV(line):
 
 def main(serial_obj):
     while True:
-        if ser.in_waiting > 0:
-            line = ser.readline().decode('utf-8').rstrip()
+        if serial_obj.in_waiting > 0:
+            line = serial_obj.readline().decode('utf-8').rstrip()
             print(line)
             ToCSV(line)
 
