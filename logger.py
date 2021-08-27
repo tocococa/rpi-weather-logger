@@ -1,18 +1,19 @@
 from __future__ import print_function
-from datetime import date
+from datetime import datetime
+from updater import updater
 import serial
-import io
-
-
 # Listen to serial communication from ADDR at BAUD rate
 # stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
+
 
 ADDR = '/dev/ttyACM0'
 BAUD = 9600
 PATH = './weather_data.csv'
+HTML = './index.html'
 
 
-def ToCSV(line):
+def toCSV(line):
+    line.insert(0, datetime.today().strftime("%H:%M:%S %d/%m"))
     with open(PATH, buffering=1, mode='a') as file:
         file.write(line)
 
@@ -22,7 +23,8 @@ def main(serial_obj):
         if serial_obj.in_waiting > 0:
             line = serial_obj.readline().decode('utf-8').rstrip()
             print(line)
-            ToCSV(line)
+            toCSV(line)
+            updater(PATH, HTML)
 
 
 if __name__ == '__main__':
