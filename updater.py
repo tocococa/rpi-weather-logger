@@ -1,5 +1,5 @@
-from os import read
 from bs4 import BeautifulSoup
+from datetime import datetime
 import csv
 # Update HTML file when logger gets new data
 
@@ -31,6 +31,9 @@ def updater(csv_path, html_path):
                         elem.string.replace_with(data[readings][i])
                         i += 1
                     readings += 1
+            footer = soup.find('footer')
+            timestamp = footer.find('pre')
+            timestamp.string.replace_with(datetime.now().strftime("%H:%M:%S"))
         return
     except FileNotFoundError as err:
         print(f"Error: {err}, path HTML incorrecto.")
