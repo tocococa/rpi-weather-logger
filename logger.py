@@ -6,7 +6,7 @@ import serial
 # stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
 
 
-ADDR = '/dev/ttyACM0'
+ADDR = 'com3'
 BAUD = 9600
 PATH = './weather_data.csv'
 HTML = './index.html'
@@ -23,11 +23,18 @@ def main(serial_obj):
         if serial_obj.in_waiting > 0:
             line = serial_obj.readline().decode('utf-8').rstrip()
             print(line)
-            toCSV(line)
-            updater(PATH, HTML)
+            #toCSV(line)
+            #updater(PATH, HTML)
 
 
 if __name__ == '__main__':
-    ser = serial.Serial(ADDR, BAUD, timeout=1)
+    ser = serial.Serial(
+        port=ADDR,
+        baudrate=BAUD,
+        bytesize=8,
+        parity="E",
+        stopbits=1,
+        timeout=0.05
+    )
     ser.flush()
     main(ser)
