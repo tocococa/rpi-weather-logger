@@ -23,8 +23,8 @@ def main(serial_obj):
         if serial_obj.in_waiting > 0:
             line = serial_obj.readline().decode('utf-8').rstrip()
             print(line)
-            #toCSV(line)
-            #updater(PATH, HTML)
+            toCSV(line)
+            updater(PATH, HTML)
 
 
 if __name__ == '__main__':
