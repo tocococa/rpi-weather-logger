@@ -1,40 +1,52 @@
 from __future__ import print_function
 from datetime import datetime
+
+from serial.serialutil import SerialException
 from updater import updater
-import serial
+from serial import Serial
 # Listen to serial communication from ADDR at BAUD rate
 # stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
 
 
-ADDR = 'com3'
+PORT = 'com3'
 BAUD = 9600
-PATH = './weather_data.csv'
-HTML = './index.html'
+PATH = './test/logs.csv'
+HTML = './test/darkhttpd/public_index/index.html'
 
 
-def toCSV(line):
-    line.insert(0, datetime.today().strftime("%H:%M:%S %d/%m"))
+def toCSV(line: str) -> None:
+    line = datetime.today().strftime("%H:%M:%S %d/%m") + ',' + line + '\n'
     with open(PATH, buffering=1, mode='a') as file:
         file.write(line)
 
 
-def main(serial_obj):
-    while True:
-        if serial_obj.in_waiting > 0:
-            line = serial_obj.readline().decode('utf-8').rstrip()
-            print(line)
-            toCSV(line)
-            updater(PATH, HTML)
+def main(ser: Serial) -> None:
+    try:
+        skip = 0
+        while True:
+            ser_bytes = ser.readline()
+            if len(ser_bytes) > 1:
+                decoded_bytes = ser_bytes.decode("utf8").strip()
+                if decoded_bytes == "REBOOT":
+                    print(decoded_bytes)
+                    skip = 2
+                elif skip > 0:
+                    print(decoded_bytes)
+                    skip -= 1
+                else:
+                    if len(decoded_bytes.split(',')) == 6:
+                        print(decoded_bytes)
+                        toCSV(decoded_bytes)
+                        updater(PATH, HTML)
+    except SerialException as err:
+        print(f"Error {err}, possible disconnect")
 
 
 if __name__ == '__main__':
-    ser = serial.Serial(
-        port=ADDR,
+    ser = Serial(
+        port=PORT,
         baudrate=BAUD,
-        bytesize=8,
-        parity="E",
-        stopbits=1,
         timeout=0.05
     )
-    ser.flush()
+    ser.flushInput()
     main(ser)

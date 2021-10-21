@@ -1,39 +1,39 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
+from collections import deque
 import csv
 # Update HTML file when logger gets new data
 
 
-def updater(csv_path, html_path):
-    data = []
+def updater(csv_path: str, html_path: str) -> None:
     try:
-        with open(csv_path, 'r', encoding='utf-8') as file:
-            reader = csv.reader(file, delimiter=',')
-            for i in range(-1, -5, -1):
-                data.append(reader[i])
+        with open(csv_path, 'r', buffering=1, encoding='utf-8') as file:
+            qdata = deque(file, 5)
+        data = []
+        for row in qdata:
+            data.append(row.split(','))
     except FileNotFoundError as err:
         print(f"Error: {err}, path CSV incorrecto.")
         return
 
     try:
         with open(html_path) as inf:
-            soup = BeautifulSoup(inf.read())
-            table = soup.find('table')
-            first = False
-            readings = 0
-            while(row := table.find_next('tr')):
-                if not first:
-                    first = True
-                else:
+            soup = BeautifulSoup(inf.read(), features="html.parser")
+            tables = soup.find_all('table')
+            entries = len(data)
+            for table in tables:
+                rows = table.find_all('tr')
+                for i, row in enumerate(rows):
                     cols = row.find_all('td')
-                    i = 0
-                    for elem in cols:
-                        elem.string.replace_with(data[readings][i])
-                        i += 1
-                    readings += 1
+                    for ii, elem in enumerate(cols):
+                        elem.string.replace_with(data[i][ii])
+                    if i == entries - 1:
+                        break
             footer = soup.find('footer')
             timestamp = footer.find('pre')
             timestamp.string.replace_with(datetime.now().strftime("%H:%M:%S"))
+        with open(html_path, 'w') as outf:
+            outf.write(str(soup))
         return
     except FileNotFoundError as err:
         print(f"Error: {err}, path HTML incorrecto.")
