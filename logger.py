@@ -33,14 +33,11 @@ def main(ser):
             if len(ser_bytes) > 1:
                 decoded_bytes = ser_bytes.decode("utf8").strip()
                 if decoded_bytes == "REBOOT":
-                    print(decoded_bytes)
                     skip = 2
                 elif skip > 0:
-                    print(decoded_bytes)
                     skip -= 1
                 else:
                     if len(decoded_bytes.split(',')) == 6:
-                        print(decoded_bytes)
                         toCSV(decoded_bytes)
                         updater(PATH, HTML)
     except SerialException as err:
