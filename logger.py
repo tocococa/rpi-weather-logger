@@ -19,13 +19,13 @@ PATH = './server/logs.csv'
 HTML = './server/darkhttpd/public_index/index.html'
 
 
-def toCSV(line: str) -> None:
+def toCSV(line):
     line = datetime.today().strftime("%H:%M:%S %d/%m") + ',' + line + '\n'
     with open(PATH, buffering=1, mode='a') as file:
         file.write(line)
 
 
-def main(ser: Serial) -> None:
+def main(ser):
     try:
         skip = 0
         while True:

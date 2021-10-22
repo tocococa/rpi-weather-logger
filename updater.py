@@ -1,11 +1,9 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 from collections import deque
-import csv
-# Update HTML file when logger gets new data
 
 
-def updater(csv_path: str, html_path: str) -> None:
+def updater(csv_path, html_path):
     try:
         with open(csv_path, 'r', buffering=1, encoding='utf-8') as file:
             qdata = deque(file, 5)
