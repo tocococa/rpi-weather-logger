@@ -1,17 +1,22 @@
-from __future__ import print_function
 from datetime import datetime
-
 from serial.serialutil import SerialException
 from updater import updater
 from serial import Serial
+
+import sys
 # Listen to serial communication from ADDR at BAUD rate
 # stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
 
 
-PORT = 'com3'
+if sys.platform.startswith('win'):
+    PORT = "com3"
+elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+    PORT = "/dev/ttyACM0"
+else:
+    raise EnvironmentError('Unsupported platform')
 BAUD = 9600
-PATH = './test/logs.csv'
-HTML = './test/darkhttpd/public_index/index.html'
+PATH = './server/logs.csv'
+HTML = './server/darkhttpd/public_index/index.html'
 
 
 def toCSV(line: str) -> None:

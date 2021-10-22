@@ -1,6 +1,15 @@
 from serial import Serial
+import sys
+
+if sys.platform.startswith('win'):
+    PORT = "com3"
+elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+    PORT = "/dev/ttyACM0"
+else:
+    raise EnvironmentError('Unsupported platform')
+
 ser = Serial(
-    port="com3",
+    port=PORT,
     baudrate=9600,
     timeout=0.05
 )
