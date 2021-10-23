@@ -131,3 +131,5 @@ dmypy.json
 # TEST FOLDER
 
 test/
+
+darkhttpd/logs.csv
