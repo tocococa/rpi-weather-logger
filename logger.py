@@ -3,10 +3,9 @@ from serial.serialutil import SerialException
 from updater import updater
 from serial import Serial
 
+import sqlite3
 import sys
-# Listen to serial communication from ADDR at BAUD rate
-# stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
-
+# Listen to serial communication from ADDR at BAUD rate stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
 
 if sys.platform.startswith('win'):
     PORT = "com3"
@@ -23,6 +22,19 @@ def toCSV(line):
     line = datetime.today().strftime("%H:%M:%S %d/%m") + ',' + line + '\n'
     with open(PATH, buffering=1, mode='a') as file:
         file.write(line)
+
+
+def toDB(line):
+    line = datetime.today().strftime("%H:%M:%S %d/%m") + ',' + line + '\n'
+    conn = sqlite3.connect('weather.db')
+    c = conn.cursor()
+    try:
+        c.execute("INSERT INTO weather VALUES (?,?,?,?,?,?,?)", line.split(','))
+    except sqlite3.OperationalError:
+        c.execute("CREATE TABLE weather (Timestamp,Temp,Humidity,Press,WindSpd,WindDir,Rain)")
+        c.execute("INSERT INTO weather VALUES (?,?,?,?,?,?,?)", line.split(','))
+    conn.commit()
+    conn.close()
 
 
 def main(ser):
