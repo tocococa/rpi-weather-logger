@@ -51,6 +51,7 @@ def main(ser):
                 else:
                     if len(decoded_bytes.split(',')) == 6:
                         toCSV(decoded_bytes)
+                        toDB(decoded_bytes)
                         updater(PATH, HTML)
     except SerialException as err:
         print(f"Error {err}, possible disconnect")
