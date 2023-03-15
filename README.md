@@ -10,7 +10,7 @@
 
 1. Compile the http server with `make` at `./server/darkhttpd`, this is a fork from [darkhttpd](https://github.com/emikulic/darkhttpd) by emikulic.
 
-2. Run `(python3 logger.py $)` to start the logger in the background.
+2. Run `nohup python3 logger.py &` to start the logger in the background.
 
 3. Run `(./darkhttpd ./public_index/ --port 8081 &)` to start the server and serve on `localhost:8081`.
 
