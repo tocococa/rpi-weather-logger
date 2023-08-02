@@ -5,6 +5,8 @@ from serial import Serial
 
 import sqlite3
 import sys
+import paho.mqtt.client as mqtt
+
 # Listen to serial communication from ADDR at BAUD rate stream should be "Temp,Humidity,Press,WindSpd,WindDir,Rain"
 
 if sys.platform.startswith('win'):
@@ -16,6 +18,27 @@ else:
 BAUD = 9600
 PATH = './server/logs.csv'
 HTML = './server/darkhttpd/public_index/index.html'
+
+MQTT_SERVER = "CHANGEME"
+MQTT_PORT = 1883
+MQTT_TOPIC = "weather"
+MQTT_PASS = "CHANGEME"
+
+mqttc = mqtt.Client()
+
+
+def toMQTT(line):
+    try:
+        mqttc.username_pw_set(MQTT_TOPIC, MQTT_PASS)
+        mqttc.connect(MQTT_SERVER, MQTT_PORT)
+        rc = mqttc.publish(MQTT_TOPIC, line)
+        if rc == mqtt.MQTT_ERR_SUCCESS:
+            print("MQTT Success")
+        else:
+            print("MQTT Error")
+        mqttc.disconnect()
+    except Exception as err:
+        print(f"MQTT Error {err}")
 
 
 def toCSV(line):
