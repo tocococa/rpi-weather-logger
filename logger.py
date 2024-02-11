@@ -14,19 +14,19 @@ elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
 else:
     raise EnvironmentError('Unsupported platform')
 BAUD = 9600
-PATH = './server/logs.csv'
+PATH = './server/weather_logs.csv'
 HTML = './server/darkhttpd/public_index/index.html'
 
 
 def toCSV(line):
-    line = datetime.today().strftime("%H:%M:%S %d/%m") + ',' + line + '\n'
+    line = datetime.today().strftime('%y/%m/%d %H:%M:%S') + ',' + line + '\n'
     with open(PATH, buffering=1, mode='a') as file:
         file.write(line)
 
 
 def toDB(line):
-    line = datetime.today().strftime("%H:%M:%S %d/%m") + ',' + line + '\n'
-    conn = sqlite3.connect('weather.db')
+    line = datetime.today().strftime('%y/%m/%d %H:%M:%S')  + ',' + line + '\n'
+    conn = sqlite3.connect('weather_db.db')
     c = conn.cursor()
     try:
         c.execute("INSERT INTO weather VALUES (?,?,?,?,?,?,?)", line.split(','))
